@@ -1,0 +1,7 @@
+# robots.txt for http://AlissonSol.com
+
+# For every spider: stay away from this
+User-Agent: *
+Disallow: /cgi-bin/
+Disallow: /old/
+Disallow: /_private/
