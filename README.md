@@ -47,8 +47,9 @@
       - Let's go through [Securing your GitHub Pages site with HTTPS](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https)
         - Use that Virtual Assistant!
           - It sent me back to the [Google Domains -> DNS](https://domains.google.com/registrar/alissonsol.com/dns) to add the CAA record!
-          - `dig alissonsol.com CAA`
-          - `alissonsol.com.    3600    IN    CAA    0 issue "letencrypt.org"`
+            - `dig alissonsol.com CAA`
+            - `alissonsol.com.    3600    IN    CAA    0 issue "letencrypt.org"`
+          - On the [Settings -> Pages](https://github.com/alissonsol/alissonsol.com/settings/pages), need to check the box to `Enforce HTTPS`
         - Note to self regarding the email configuration
           - It is all pointing to Google (See `dig alissonsol.com MX`)
           - And the [Google Domains -> Email](https://domains.google.com/registrar/alissonsol.com/email) is configured to forward it!
