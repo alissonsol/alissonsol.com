@@ -47,4 +47,9 @@
       - Let's go through [Securing your GitHub Pages site with HTTPS](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https)
         - Use that Virtual Assistant!
           - It sent me back to the [Google Domains -> DNS](https://domains.google.com/registrar/alissonsol.com/dns) to add the CAA record!
-          - Some propagation wait ongoing!
+          - `dig alissonsol.com CAA`
+          - `alissonsol.com.    3600    IN    CAA    0 issue "letencrypt.org"`
+        - Note to self regarding the email configuration
+          - It is all pointing to Google (See `dig alissonsol.com MX`)
+          - And the [Google Domains -> Email](https://domains.google.com/registrar/alissonsol.com/email) is configured to forward it!
+        - What a beauty! [Let It Be](https://www.youtube.com/watch?v=HzvDofigTKQ)!
