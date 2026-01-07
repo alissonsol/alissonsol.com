@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(if not exist \"c:\\\\git\\\\alissonsol\\\\alissonsol.com\\\\experiments\" mkdir \"c:\\\\git\\\\alissonsol\\\\alissonsol.com\\\\experiments\")",
+      "Bash(test:*)"
+    ]
+  }
+}

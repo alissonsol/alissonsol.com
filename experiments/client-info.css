@@ -1,0 +1,182 @@
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	margin: 0;
+	padding: 20px;
+	background: #f5f5f5;
+	min-height: 100vh;
+	color: #333;
+}
+
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	padding: 30px;
+}
+
+h1 {
+	color: #555;
+	text-align: center;
+	margin-bottom: 30px;
+	font-size: 2em;
+}
+
+.info-section {
+	margin-bottom: 30px;
+	padding: 20px;
+	background: #fafafa;
+	border-radius: 6px;
+	border-left: 4px solid #888;
+}
+
+.info-section h2 {
+	color: #666;
+	margin-top: 0;
+	font-size: 1.5em;
+	margin-bottom: 15px;
+}
+
+.info-item {
+	display: flex;
+	justify-content: space-between;
+	padding: 10px 0;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.info-item:last-child {
+	border-bottom: none;
+}
+
+.info-label {
+	font-weight: bold;
+	color: #555;
+	flex: 0 0 40%;
+}
+
+.info-value {
+	color: #333;
+	flex: 1;
+	text-align: right;
+	word-break: break-all;
+}
+
+.loading {
+	text-align: center;
+	color: #888;
+	font-style: italic;
+}
+
+.error {
+	color: #c33;
+	font-style: italic;
+}
+
+.success {
+	color: #5a5;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+table td {
+	padding: 10px;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+table td:first-child {
+	font-weight: bold;
+	color: #555;
+	width: 40%;
+}
+
+table td:last-child {
+	color: #333;
+	word-break: break-all;
+}
+
+table tr:last-child td {
+	border-bottom: none;
+}
+
+.back-link {
+	text-align: center;
+	margin-top: 30px;
+}
+
+.back-link a {
+	color: #666;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.back-link a:hover {
+	text-decoration: underline;
+}
+
+.spinner {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border: 3px solid #ddd;
+	border-radius: 50%;
+	border-top-color: #888;
+	animation: spin 1s ease-in-out infinite;
+	margin-right: 10px;
+	vertical-align: middle;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.loading-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	color: #888;
+	font-style: italic;
+}
+
+.progress-bar {
+	width: 100%;
+	height: 4px;
+	background-color: #e0e0e0;
+	border-radius: 2px;
+	overflow: hidden;
+	margin-top: 10px;
+}
+
+.progress-bar-fill {
+	height: 100%;
+	background: #888;
+	width: 0%;
+	transition: width 0.3s ease;
+	animation: progress-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+	0%, 100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.6;
+	}
+}
+
+@media (max-width: 600px) {
+	.info-item {
+		flex-direction: column;
+	}
+
+	.info-value {
+		text-align: left;
+		margin-top: 5px;
+	}
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Client IP and Geolocation Information">
+        <title>Client Information - Alisson Sol</title>
+        <link rel="stylesheet" href="client-info.css">
+</head>
+
+<body>
+        <div class="container">
+                <h1>Client Information</h1>
+
+                <div class="info-section" id="ip-info">
+                        <h2>IP Address Information</h2>
+                        <div class="loading-container">
+                                <span class="spinner"></span>
+                                <span>Loading IP information...</span>
+                        </div>
+                        <div class="progress-bar">
+                                <div id="ip-progress" class="progress-bar-fill"></div>
+                        </div>
+                        <table id="ip-info-table"></table>
+                </div>
+
+                <div class="info-section" id="provider-info">
+                        <h2>Access Provider Information</h2>
+                        <div class="loading-container">
+                                <span class="spinner"></span>
+                                <span>Loading provider information...</span>
+                        </div>
+                        <div class="progress-bar">
+                                <div id="provider-progress" class="progress-bar-fill"></div>
+                        </div>
+                        <table id="provider-info-table"></table>
+                </div>
+
+                <div class="info-section" id="geo-info">
+                        <h2>Geolocation Information</h2>
+                        <div class="loading-container">
+                                <span class="spinner"></span>
+                                <span>Loading geolocation data...</span>
+                        </div>
+                        <div class="progress-bar">
+                                <div id="geo-progress" class="progress-bar-fill"></div>
+                        </div>
+                        <table id="geo-info-table"></table>
+                </div>
+
+                <div class="info-section" id="browser-info">
+                        <h2>Browser Information</h2>
+                        <div class="loading-container">
+                                <span class="spinner"></span>
+                                <span>Loading browser information...</span>
+                        </div>
+                        <div class="progress-bar">
+                                <div id="browser-progress" class="progress-bar-fill"></div>
+                        </div>
+                        <table id="browser-info-table"></table>
+                </div>
+
+                <div class="back-link">
+                        <a href="../index.htm">← Back to Home</a>
+                </div>
+        </div>
+
+        <script src="client-info.js"></script>
+</body>
+
+</html>
