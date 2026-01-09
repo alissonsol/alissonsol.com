@@ -225,6 +225,12 @@ async function fetchGeolocation() {
 					errorMsg = 'An unknown error occurred.';
 			}
 			geoInfoTable.innerHTML = `<tr><td colspan="2" class="error">Geolocation error: ${errorMsg}</td></tr>`;
+
+			// Hide loading container and progress bar after error
+			const loadingContainer = document.querySelector('#geo-info .loading-container');
+			const progressContainer = document.querySelector('#geo-info .progress-bar');
+			if (loadingContainer) loadingContainer.style.display = 'none';
+			if (progressContainer) progressContainer.style.display = 'none';
 		}
 	);
 }
