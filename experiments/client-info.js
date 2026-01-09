@@ -82,11 +82,60 @@ async function measureRTT(url) {
 	}
 }
 
+// Detect if browser is in private/incognito mode
+async function isPrivateMode() {
+	return new Promise((resolve) => {
+		// Method 1: Check for quota in Chrome/Edge
+		if ('storage' in navigator && 'estimate' in navigator.storage) {
+			navigator.storage.estimate().then(({ quota }) => {
+				// In incognito mode, quota is typically very small or 0
+				if (quota < 120000000) { // Less than ~120MB suggests incognito
+					resolve(true);
+					return;
+				}
+				resolve(false);
+			}).catch(() => resolve(false));
+		} else {
+			// Method 2: IndexedDB test for Firefox
+			const db = indexedDB.open('test');
+			db.onerror = () => resolve(true);
+			db.onsuccess = () => {
+				resolve(false);
+				indexedDB.deleteDatabase('test');
+			};
+		}
+
+		// Timeout fallback
+		setTimeout(() => resolve(false), 1000);
+	});
+}
+
 // Fetch IP information from ipify and ipinfo.io
 async function fetchIPInfo() {
 	const ipInfoTable = document.getElementById('ip-info-table');
 	const providerInfoTable = document.getElementById('provider-info-table');
 	if (!ipInfoTable || !providerInfoTable) return;
+
+	// Check if in private/incognito mode
+	const privateMode = await isPrivateMode();
+	if (privateMode) {
+		ipInfoTable.innerHTML = `<tr><td colspan="2" class="private-mode">Private/Incognito mode detected. IP information is not available in this mode.</td></tr>`;
+		providerInfoTable.innerHTML = `<tr><td colspan="2" class="private-mode">Private/Incognito mode detected. Provider information is not available in this mode.</td></tr>`;
+
+		// Hide loading containers and progress bars
+		setTimeout(() => {
+			const ipLoadingContainer = document.querySelector('#ip-info .loading-container');
+			const ipProgressContainer = document.querySelector('#ip-info .progress-bar');
+			const providerLoadingContainer = document.querySelector('#provider-info .loading-container');
+			const providerProgressContainer = document.querySelector('#provider-info .progress-bar');
+
+			if (ipLoadingContainer) ipLoadingContainer.style.display = 'none';
+			if (ipProgressContainer) ipProgressContainer.style.display = 'none';
+			if (providerLoadingContainer) providerLoadingContainer.style.display = 'none';
+			if (providerProgressContainer) providerProgressContainer.style.display = 'none';
+		}, 500);
+		return;
+	}
 
 	try {
 		updateProgress('ip-progress', 10);
@@ -151,6 +200,10 @@ async function fetchIPInfo() {
 		if (detailData.loc) {
 			const [lat, lon] = detailData.loc.split(',');
 			displayIPBasedGeolocation(parseFloat(lat), parseFloat(lon), 'IP-based');
+
+			// Hide the geolocation button since we have IP-based location
+			const buttonContainer = document.getElementById('geo-button-container');
+			if (buttonContainer) buttonContainer.style.display = 'none';
 		}
 
 		// Hide loading containers and progress bars after completion
@@ -168,18 +221,41 @@ async function fetchIPInfo() {
 	} catch (error) {
 		ipInfoTable.innerHTML = `<tr><td colspan="2" class="error">Error loading IP information: ${error instanceof Error ? error.message : 'Unknown error'}</td></tr>`;
 		providerInfoTable.innerHTML = `<tr><td colspan="2" class="error">Error loading provider information: ${error instanceof Error ? error.message : 'Unknown error'}</td></tr>`;
+
+		// Hide loading containers and progress bars after error
+		setTimeout(() => {
+			const ipLoadingContainer = document.querySelector('#ip-info .loading-container');
+			const ipProgressContainer = document.querySelector('#ip-info .progress-bar');
+			const providerLoadingContainer = document.querySelector('#provider-info .loading-container');
+			const providerProgressContainer = document.querySelector('#provider-info .progress-bar');
+
+			if (ipLoadingContainer) ipLoadingContainer.style.display = 'none';
+			if (ipProgressContainer) ipProgressContainer.style.display = 'none';
+			if (providerLoadingContainer) providerLoadingContainer.style.display = 'none';
+			if (providerProgressContainer) providerProgressContainer.style.display = 'none';
+		}, 500);
 	}
 }
 
 // Fetch browser-based geolocation
 async function fetchGeolocation() {
 	const geoInfoTable = document.getElementById('geo-info-table');
+	const loadingContainer = document.querySelector('#geo-info .loading-container');
+	const progressContainer = document.querySelector('#geo-info .progress-bar');
+	const buttonContainer = document.getElementById('geo-button-container');
+
 	if (!geoInfoTable) return;
 
 	if (!navigator.geolocation) {
 		geoInfoTable.innerHTML = `<tr><td colspan="2" class="error">Geolocation is not supported by your browser</td></tr>`;
+		if (buttonContainer) buttonContainer.style.display = 'none';
 		return;
 	}
+
+	// Hide button and show loading
+	if (buttonContainer) buttonContainer.style.display = 'none';
+	if (loadingContainer) loadingContainer.style.display = 'flex';
+	if (progressContainer) progressContainer.style.display = 'block';
 
 	updateProgress('geo-progress', 20);
 	geoInfoTable.innerHTML = `<tr><td colspan="2">Requesting location permission...</td></tr>`;
@@ -229,8 +305,11 @@ async function fetchGeolocation() {
 			// Hide loading container and progress bar after error
 			const loadingContainer = document.querySelector('#geo-info .loading-container');
 			const progressContainer = document.querySelector('#geo-info .progress-bar');
+			const buttonContainer = document.getElementById('geo-button-container');
 			if (loadingContainer) loadingContainer.style.display = 'none';
 			if (progressContainer) progressContainer.style.display = 'none';
+			// Show button again so user can retry
+			if (buttonContainer) buttonContainer.style.display = 'flex';
 		}
 	);
 }
@@ -320,6 +399,13 @@ if (document.readyState === 'loading') {
 function init() {
 	console.log('Initializing client info page...');
 	fetchIPInfo().catch(err => console.error('IP Info Error:', err));
-	fetchGeolocation().catch(err => console.error('Geolocation Error:', err));
 	displayBrowserInfo();
+
+	// Set up geolocation button click handler
+	const geoButton = document.getElementById('allow-geolocation-btn');
+	if (geoButton) {
+		geoButton.addEventListener('click', () => {
+			fetchGeolocation().catch(err => console.error('Geolocation Error:', err));
+		});
+	}
 }

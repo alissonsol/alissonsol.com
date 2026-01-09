@@ -77,6 +77,12 @@ h1 {
 	color: #5a5;
 }
 
+.private-mode {
+	color: #f7931e;
+	font-style: italic;
+	font-weight: bold;
+}
+
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -168,6 +174,37 @@ table tr:last-child td {
 	50% {
 		opacity: 0.6;
 	}
+}
+
+.geo-button-container {
+	display: flex;
+	justify-content: center;
+	padding: 20px;
+}
+
+.allow-geolocation-btn {
+	background-color: #888;
+	color: white;
+	border: none;
+	padding: 12px 24px;
+	font-size: 16px;
+	font-weight: bold;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.allow-geolocation-btn:hover {
+	background-color: #666;
+}
+
+.allow-geolocation-btn:active {
+	transform: scale(0.98);
+}
+
+.allow-geolocation-btn:focus {
+	outline: 2px solid #555;
+	outline-offset: 2px;
 }
 
 @media (max-width: 600px) {

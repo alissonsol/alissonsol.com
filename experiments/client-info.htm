@@ -51,12 +51,15 @@
 
                 <div class="info-section" id="geo-info">
                         <h2>Geolocation Information</h2>
-                        <div class="loading-container">
+                        <div class="loading-container" style="display: none;">
                                 <span class="spinner"></span>
                                 <span>Loading geolocation data...</span>
                         </div>
-                        <div class="progress-bar">
+                        <div class="progress-bar" style="display: none;">
                                 <div id="geo-progress" class="progress-bar-fill"></div>
+                        </div>
+                        <div id="geo-button-container" class="geo-button-container">
+                                <button id="allow-geolocation-btn" class="allow-geolocation-btn">Allow Geolocation</button>
                         </div>
                         <table id="geo-info-table"></table>
                 </div>
