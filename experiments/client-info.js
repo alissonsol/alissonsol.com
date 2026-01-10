@@ -256,143 +256,97 @@ function displayGeolocation(pos) {
 }
 
 async function isGlobalProtectDetected() {
-	return new Promise((resolve) => {
-		let detected = false;
+	const hasGPElement = document.querySelector('[data-globalprotect]') !== null ||
+		document.querySelector('[class*="globalprotect"]') !== null ||
+		document.querySelector('[id*="globalprotect"]') !== null ||
+		document.querySelector('[class*="pan-gp"]') !== null;
 
-		const checkGlobalProtectArtifacts = () => {
-			const hasGPElement = document.querySelector('[data-globalprotect]') !== null ||
-				document.querySelector('[class*="globalprotect"]') !== null ||
-				document.querySelector('[id*="globalprotect"]') !== null ||
-				document.querySelector('[class*="pan-gp"]') !== null;
+	const hasGPProperty = 'GlobalProtect' in window ||
+		'PanGP' in window ||
+		'PaloAltoNetworks' in window;
 
-			const hasGPProperty = 'GlobalProtect' in window ||
-				'PanGP' in window ||
-				'PaloAltoNetworks' in window;
+	const hasGPScript = Array.from(document.scripts).some(script =>
+		script.src.toLowerCase().includes('globalprotect') ||
+		script.src.toLowerCase().includes('pan-gp')
+	);
 
-			const hasGPScript = Array.from(document.scripts).some(script =>
-				script.src.toLowerCase().includes('globalprotect') ||
-				script.src.toLowerCase().includes('pan-gp')
-			);
-
-			return hasGPElement || hasGPProperty || hasGPScript;
-		};
-
-		const handleBlur = () => {
-			detected = true;
-			window.removeEventListener('blur', handleBlur);
-		};
-
-		window.addEventListener('blur', handleBlur);
-
-		const iframe = document.createElement('iframe');
-		iframe.style.display = 'none';
-		iframe.src = 'globalprotectcallback://';
-		document.body.appendChild(iframe);
-
-		setTimeout(() => {
-			window.removeEventListener('blur', handleBlur);
-			if (document.body.contains(iframe)) {
-				document.body.removeChild(iframe);
-			}
-			resolve(detected || checkGlobalProtectArtifacts());
-		}, 500);
-	});
+	return hasGPElement || hasGPProperty || hasGPScript;
 }
 
 async function isWSSDetected() {
-	return new Promise((resolve) => {
-		let detected = false;
+	const hasWSSElement = document.querySelector('[data-wss-agent]') !== null ||
+		document.querySelector('[class*="wss-"]') !== null ||
+		document.querySelector('[id*="wss-"]') !== null ||
+		document.querySelector('[class*="symantec"]') !== null ||
+		document.querySelector('[class*="broadcom"]') !== null;
 
-		const checkWSSArtifacts = () => {
-			const hasWSSElement = document.querySelector('[data-wss-agent]') !== null ||
-				document.querySelector('[class*="wss-"]') !== null ||
-				document.querySelector('[id*="wss-"]') !== null ||
-				document.querySelector('[class*="symantec"]') !== null ||
-				document.querySelector('[class*="broadcom"]') !== null;
+	const hasWSSProperty = 'WSSAgent' in window ||
+		'SymantecWSS' in window ||
+		'BroadcomWSS' in window ||
+		'CloudSOC' in window;
 
-			const hasWSSProperty = 'WSSAgent' in window ||
-				'SymantecWSS' in window ||
-				'BroadcomWSS' in window ||
-				'CloudSOC' in window;
+	const hasWSSScript = Array.from(document.scripts).some(script =>
+		script.src.toLowerCase().includes('symantec') ||
+		script.src.toLowerCase().includes('broadcom') ||
+		script.src.toLowerCase().includes('wss-agent')
+	);
 
-			const hasWSSScript = Array.from(document.scripts).some(script =>
-				script.src.toLowerCase().includes('symantec') ||
-				script.src.toLowerCase().includes('broadcom') ||
-				script.src.toLowerCase().includes('wss-agent')
-			);
+	if (hasWSSElement || hasWSSProperty || hasWSSScript) {
+		return 'Yes';
+	}
 
-			return hasWSSElement || hasWSSProperty || hasWSSScript;
-		};
-
-		const handleBlur = () => {
-			detected = true;
-			window.removeEventListener('blur', handleBlur);
-		};
-
-		window.addEventListener('blur', handleBlur);
-
-		const iframe = document.createElement('iframe');
-		iframe.style.display = 'none';
-		iframe.src = 'symantecwss://';
-		document.body.appendChild(iframe);
-
-		setTimeout(() => {
-			window.removeEventListener('blur', handleBlur);
-			if (document.body.contains(iframe)) {
-				document.body.removeChild(iframe);
+	try {
+		const response = await fetch('https://ipinfo.io/json');
+		const data = await response.json();
+		if (data.org) {
+			const orgLower = data.org.toLowerCase();
+			if (orgLower.includes('symantec') ||
+				orgLower.includes('broadcom') ||
+				orgLower.includes('cloud soc') ||
+				orgLower.includes('cloudsoc')) {
+				return 'Yes (detected ISP)';
 			}
-			resolve(detected || checkWSSArtifacts());
-		}, 500);
-	});
+		}
+	} catch (e) {
+	}
+
+	return false;
 }
 
 async function isNetskopeDetected() {
-	return new Promise((resolve) => {
-		let detected = false;
+	const hasNetskopeElement = document.querySelector('[data-netskope]') !== null ||
+		document.querySelector('[class*="netskope"]') !== null ||
+		document.querySelector('[id*="netskope"]') !== null ||
+		document.querySelector('[class*="ns-client"]') !== null ||
+		document.querySelector('[id*="ns-client"]') !== null;
 
-		const checkNetskopeArtifacts = () => {
-			const hasNetskopeElement = document.querySelector('[data-netskope]') !== null ||
-				document.querySelector('[class*="netskope"]') !== null ||
-				document.querySelector('[id*="netskope"]') !== null ||
-				document.querySelector('[class*="ns-client"]') !== null ||
-				document.querySelector('[id*="ns-client"]') !== null;
+	const hasNetskopeProperty = 'Netskope' in window ||
+		'NetskopeClient' in window ||
+		'nsClient' in window ||
+		'NSClient' in window ||
+		'npa_client' in window;
 
-			const hasNetskopeProperty = 'Netskope' in window ||
-				'NetskopeClient' in window ||
-				'nsClient' in window ||
-				'NSClient' in window ||
-				'npa_client' in window;
+	const hasNetskopeScript = Array.from(document.scripts).some(script =>
+		script.src.toLowerCase().includes('netskope') ||
+		script.id.toLowerCase().includes('netskope')
+	);
 
-			const hasNetskopeScript = Array.from(document.scripts).some(script =>
-				script.src.toLowerCase().includes('netskope') ||
-				script.id.toLowerCase().includes('netskope')
-			);
+	const hasNetskopeMeta = document.querySelector('meta[name*="netskope"]') !== null;
 
-			const hasNetskopeMeta = document.querySelector('meta[name*="netskope"]') !== null;
+	if (hasNetskopeElement || hasNetskopeProperty || hasNetskopeScript || hasNetskopeMeta) {
+		return 'Yes';
+	}
 
-			return hasNetskopeElement || hasNetskopeProperty || hasNetskopeScript || hasNetskopeMeta;
-		};
+	try {
+		const response = await fetch('https://ipinfo.io/json');
+		const data = await response.json();
+		if (data.org && data.org.toLowerCase().endsWith('netskope inc')) {
+			return 'Yes (detected ISP)';
+		}
+	} catch (e) {
+	}
 
-		const handleBlur = () => {
-			detected = true;
-			window.removeEventListener('blur', handleBlur);
-		};
-
-		window.addEventListener('blur', handleBlur);
-
-		const iframe = document.createElement('iframe');
-		iframe.style.display = 'none';
-		iframe.src = 'nsclient://';
-		document.body.appendChild(iframe);
-
-		setTimeout(() => {
-			window.removeEventListener('blur', handleBlur);
-			if (document.body.contains(iframe)) {
-				document.body.removeChild(iframe);
-			}
-			resolve(detected || checkNetskopeArtifacts());
-		}, 500);
-	});
+	return false;
 }
 
 async function displayBrowserInfo() {
@@ -423,8 +377,8 @@ async function displayBrowserInfo() {
 		<tr><td>Cookies Enabled</td><td>${navigator.cookieEnabled ? 'Yes' : 'No'}</td></tr>
 		<tr><td>Online Status</td><td>${navigator.onLine ? 'Online' : 'Offline'}</td></tr>
 		<tr><td>Is Global Protect Detected</td><td>${isGlobalProtect ? 'Yes' : falseNegativeNote}</td></tr>
-		<tr><td>Is WSS Detected</td><td>${isWSS ? 'Yes' : falseNegativeNote}</td></tr>
-		<tr><td>Is Netskope Detected</td><td>${isNetskope ? 'Yes' : falseNegativeNote}</td></tr>
+		<tr><td>Is WSS Detected</td><td>${isWSS || falseNegativeNote}</td></tr>
+		<tr><td>Is Netskope Detected</td><td>${isNetskope || falseNegativeNote}</td></tr>
 	`;
 
 	updateProgress('browser-progress', 100);
