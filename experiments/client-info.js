@@ -273,6 +273,47 @@ async function isGlobalProtectDetected() {
 	return hasGPElement || hasGPProperty || hasGPScript;
 }
 
+function tryGlobalProtectProtocol() {
+	return new Promise((resolve) => {
+		let detected = false;
+
+		const handleBlur = () => {
+			detected = true;
+			window.removeEventListener('blur', handleBlur);
+		};
+
+		window.addEventListener('blur', handleBlur);
+
+		const iframe = document.createElement('iframe');
+		iframe.style.display = 'none';
+		iframe.src = 'globalprotectcallback://';
+		document.body.appendChild(iframe);
+
+		setTimeout(() => {
+			window.removeEventListener('blur', handleBlur);
+			if (document.body.contains(iframe)) {
+				document.body.removeChild(iframe);
+			}
+			resolve(detected);
+		}, 1500);
+	});
+}
+
+async function onTryGlobalProtectClick() {
+	const cell = document.getElementById('gp-detect-cell');
+	if (!cell) return;
+
+	cell.innerHTML = 'Testing... (dismiss any dialog that appears)';
+
+	const detected = await tryGlobalProtectProtocol();
+
+	if (detected) {
+		cell.innerHTML = 'Yes (protocol handler)';
+	} else {
+		cell.innerHTML = 'No (may be false negative)';
+	}
+}
+
 async function isWSSDetected() {
 	const hasWSSElement = document.querySelector('[data-wss-agent]') !== null ||
 		document.querySelector('[class*="wss-"]') !== null ||
@@ -376,7 +417,7 @@ async function displayBrowserInfo() {
 		<tr><td>Color Depth</td><td>${screen.colorDepth}-bit</td></tr>
 		<tr><td>Cookies Enabled</td><td>${navigator.cookieEnabled ? 'Yes' : 'No'}</td></tr>
 		<tr><td>Online Status</td><td>${navigator.onLine ? 'Online' : 'Offline'}</td></tr>
-		<tr><td>Is Global Protect Detected</td><td>${isGlobalProtect ? 'Yes' : falseNegativeNote}</td></tr>
+		<tr><td>Is Global Protect Detected</td><td id="gp-detect-cell">${isGlobalProtect ? 'Yes' : `${falseNegativeNote} <button onclick="onTryGlobalProtectClick()" style="margin-left: 8px; cursor: pointer;">Try Protocol</button>`}</td></tr>
 		<tr><td>Is WSS Detected</td><td>${isWSS || falseNegativeNote}</td></tr>
 		<tr><td>Is Netskope Detected</td><td>${isNetskope || falseNegativeNote}</td></tr>
 	`;
