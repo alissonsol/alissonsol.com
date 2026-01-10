@@ -255,160 +255,142 @@ function displayGeolocation(pos) {
 	geoInfoTable.innerHTML = rows;
 }
 
-/**
- * Attempts to detect if Palo Alto GlobalProtect is detected
- * by triggering its custom URI scheme.
- * @returns Promise<boolean> - True if the application responded to the protocol.
- */
 async function isGlobalProtectDetected() {
 	return new Promise((resolve) => {
-		let hasResponded = false;
+		let detected = false;
 
-		// The blur event fires if the browser successfully hands off
-		// the request to an external application (GlobalProtect).
+		const checkGlobalProtectArtifacts = () => {
+			const hasGPElement = document.querySelector('[data-globalprotect]') !== null ||
+				document.querySelector('[class*="globalprotect"]') !== null ||
+				document.querySelector('[id*="globalprotect"]') !== null ||
+				document.querySelector('[class*="pan-gp"]') !== null;
+
+			const hasGPProperty = 'GlobalProtect' in window ||
+				'PanGP' in window ||
+				'PaloAltoNetworks' in window;
+
+			const hasGPScript = Array.from(document.scripts).some(script =>
+				script.src.toLowerCase().includes('globalprotect') ||
+				script.src.toLowerCase().includes('pan-gp')
+			);
+
+			return hasGPElement || hasGPProperty || hasGPScript;
+		};
+
 		const handleBlur = () => {
-			hasResponded = true;
+			detected = true;
 			window.removeEventListener('blur', handleBlur);
 		};
 
 		window.addEventListener('blur', handleBlur);
 
-		// Attempt to open the GlobalProtect custom protocol
-		// Using a hidden iframe is less disruptive than window.location
 		const iframe = document.createElement('iframe');
 		iframe.style.display = 'none';
-		iframe.src = 'globalprotect://';
+		iframe.src = 'globalprotectcallback://';
 		document.body.appendChild(iframe);
 
-		// Wait for a short duration to see if the 'blur' event triggers.
-		// 500ms is usually sufficient for the OS hand-off.
 		setTimeout(() => {
 			window.removeEventListener('blur', handleBlur);
 			if (document.body.contains(iframe)) {
 				document.body.removeChild(iframe);
 			}
-			resolve(hasResponded);
+			resolve(detected || checkGlobalProtectArtifacts());
 		}, 500);
 	});
 }
 
-/**
- * Attempts to detect if Broadcom WSS Agent (Web Security Service Agent) is detected
- * by checking for browser extensions and custom protocol handlers.
- * @returns Promise<boolean> - True if WSS Agent is detected.
- */
 async function isWSSDetected() {
 	return new Promise((resolve) => {
-		let hasResponded = false;
+		let detected = false;
 
-		// Check for common WSS Agent indicators
-		// 1. Check for custom protocol handler (similar to GlobalProtect)
+		const checkWSSArtifacts = () => {
+			const hasWSSElement = document.querySelector('[data-wss-agent]') !== null ||
+				document.querySelector('[class*="wss-"]') !== null ||
+				document.querySelector('[id*="wss-"]') !== null ||
+				document.querySelector('[class*="symantec"]') !== null ||
+				document.querySelector('[class*="broadcom"]') !== null;
+
+			const hasWSSProperty = 'WSSAgent' in window ||
+				'SymantecWSS' in window ||
+				'BroadcomWSS' in window ||
+				'CloudSOC' in window;
+
+			const hasWSSScript = Array.from(document.scripts).some(script =>
+				script.src.toLowerCase().includes('symantec') ||
+				script.src.toLowerCase().includes('broadcom') ||
+				script.src.toLowerCase().includes('wss-agent')
+			);
+
+			return hasWSSElement || hasWSSProperty || hasWSSScript;
+		};
+
 		const handleBlur = () => {
-			hasResponded = true;
+			detected = true;
 			window.removeEventListener('blur', handleBlur);
 		};
 
 		window.addEventListener('blur', handleBlur);
 
-		// Try WSS custom protocol if it exists
-		// Note: WSS Agent may use 'wss://', 'symantecwss://', or 'bcwss://' protocols
 		const iframe = document.createElement('iframe');
 		iframe.style.display = 'none';
 		iframe.src = 'symantecwss://';
 		document.body.appendChild(iframe);
 
-		// Additionally check for WSS Agent extension artifacts in the DOM
-		// WSS Agent often injects elements or modifies the page
-		const checkWSSArtifacts = () => {
-			// Check for common WSS Agent injected elements or attributes
-			const hasWSSElement = document.querySelector('[data-wss-agent]') !== null ||
-				document.querySelector('[class*="wss-"]') !== null ||
-				document.querySelector('[id*="wss-"]') !== null ||
-				document.querySelector('[class*="symantec"]') !== null;
-
-			// Check if WSS Agent modified the window object
-			const hasWSSProperty = 'WSSAgent' in window ||
-				'SymantecWSS' in window ||
-				'BroadcomWSS' in window;
-
-			return hasWSSElement || hasWSSProperty;
-		};
-
-		// Wait for a short duration to see if the 'blur' event triggers
-		// or if WSS artifacts are detected
 		setTimeout(() => {
 			window.removeEventListener('blur', handleBlur);
 			if (document.body.contains(iframe)) {
 				document.body.removeChild(iframe);
 			}
-
-			// Resolve true if either blur event fired or WSS artifacts detected
-			resolve(hasResponded || checkWSSArtifacts());
+			resolve(detected || checkWSSArtifacts());
 		}, 500);
 	});
 }
 
-/**
- * Attempts to detect if Netskope Agent (Netskope One Client) is detected
- * by checking for browser extensions, custom protocol handlers, and DOM modifications.
- * @returns Promise<boolean> - True if Netskope Agent is detected.
- */
 async function isNetskopeDetected() {
 	return new Promise((resolve) => {
-		let hasResponded = false;
+		let detected = false;
 
-		// Check for Netskope custom protocol handler
-		const handleBlur = () => {
-			hasResponded = true;
-			window.removeEventListener('blur', handleBlur);
-		};
-
-		window.addEventListener('blur', handleBlur);
-
-		// Try Netskope custom protocol
-		// Netskope may use 'netskope://', 'nsclient://', or similar protocols
-		const iframe = document.createElement('iframe');
-		iframe.style.display = 'none';
-		iframe.src = 'netskope://';
-		document.body.appendChild(iframe);
-
-		// Check for Netskope Agent artifacts
 		const checkNetskopeArtifacts = () => {
-			// Check for Netskope injected elements or attributes
 			const hasNetskopeElement = document.querySelector('[data-netskope]') !== null ||
 				document.querySelector('[class*="netskope"]') !== null ||
 				document.querySelector('[id*="netskope"]') !== null ||
-				document.querySelector('[class*="ns-"]') !== null ||
+				document.querySelector('[class*="ns-client"]') !== null ||
 				document.querySelector('[id*="ns-client"]') !== null;
 
-			// Check if Netskope modified the window object
 			const hasNetskopeProperty = 'Netskope' in window ||
 				'NetskopeClient' in window ||
 				'nsClient' in window ||
-				'NSClient' in window;
+				'NSClient' in window ||
+				'npa_client' in window;
 
-			// Check for Netskope browser extension by looking for injected scripts
 			const hasNetskopeScript = Array.from(document.scripts).some(script =>
-				script.src.includes('netskope') || script.id.includes('netskope')
+				script.src.toLowerCase().includes('netskope') ||
+				script.id.toLowerCase().includes('netskope')
 			);
 
-			// Check for Netskope certificate or proxy indicators
-			// Netskope often intercepts HTTPS traffic and may modify headers
 			const hasNetskopeMeta = document.querySelector('meta[name*="netskope"]') !== null;
 
 			return hasNetskopeElement || hasNetskopeProperty || hasNetskopeScript || hasNetskopeMeta;
 		};
 
-		// Wait for a short duration to see if the 'blur' event triggers
-		// or if Netskope artifacts are detected
+		const handleBlur = () => {
+			detected = true;
+			window.removeEventListener('blur', handleBlur);
+		};
+
+		window.addEventListener('blur', handleBlur);
+
+		const iframe = document.createElement('iframe');
+		iframe.style.display = 'none';
+		iframe.src = 'nsclient://';
+		document.body.appendChild(iframe);
+
 		setTimeout(() => {
 			window.removeEventListener('blur', handleBlur);
 			if (document.body.contains(iframe)) {
 				document.body.removeChild(iframe);
 			}
-
-			// Resolve true if either blur event fired or Netskope artifacts detected
-			resolve(hasResponded || checkNetskopeArtifacts());
+			resolve(detected || checkNetskopeArtifacts());
 		}, 500);
 	});
 }
@@ -431,6 +413,7 @@ async function displayBrowserInfo() {
 
 	updateProgress('browser-progress', 90);
 
+	const falseNegativeNote = 'No (may be false negative)';
 	browserInfoTable.innerHTML = `
 		<tr><td>User Agent</td><td>${navigator.userAgent}</td></tr>
 		<tr><td>Platform</td><td>${navigator.platform}</td></tr>
@@ -439,9 +422,9 @@ async function displayBrowserInfo() {
 		<tr><td>Color Depth</td><td>${screen.colorDepth}-bit</td></tr>
 		<tr><td>Cookies Enabled</td><td>${navigator.cookieEnabled ? 'Yes' : 'No'}</td></tr>
 		<tr><td>Online Status</td><td>${navigator.onLine ? 'Online' : 'Offline'}</td></tr>
-		<tr><td>Is Global Protect Detected</td><td>${isGlobalProtect ? 'Yes' : 'No'}</td></tr>
-		<tr><td>Is WSS Detected</td><td>${isWSS ? 'Yes' : 'No'}</td></tr>
-		<tr><td>Is Netskope Detected</td><td>${isNetskope ? 'Yes' : 'No'}</td></tr>
+		<tr><td>Is Global Protect Detected</td><td>${isGlobalProtect ? 'Yes' : falseNegativeNote}</td></tr>
+		<tr><td>Is WSS Detected</td><td>${isWSS ? 'Yes' : falseNegativeNote}</td></tr>
+		<tr><td>Is Netskope Detected</td><td>${isNetskope ? 'Yes' : falseNegativeNote}</td></tr>
 	`;
 
 	updateProgress('browser-progress', 100);
