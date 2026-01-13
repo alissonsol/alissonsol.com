@@ -314,6 +314,60 @@ async function onTryGlobalProtectClick() {
 	}
 }
 
+function isWindowsPlatform() {
+	const platform = navigator.platform?.toLowerCase() || '';
+	const userAgent = navigator.userAgent?.toLowerCase() || '';
+	return platform.includes('win') || userAgent.includes('windows');
+}
+
+async function isClientCertificateDetected() {
+	if (!isWindowsPlatform()) {
+		return 'N/A (not Windows)';
+	}
+	return 'pending';
+}
+
+async function testClientCertificate() {
+	return new Promise((resolve) => {
+		try {
+			const testUrl = window.location.origin + '/experiments/certificate.cer';
+			fetch(testUrl, {
+				method: 'HEAD',
+				credentials: 'include'
+			}).then(response => {
+				if (response.ok) {
+					resolve('accessible');
+				} else {
+					resolve('not-accessible');
+				}
+			}).catch(() => {
+				resolve('error');
+			});
+
+			setTimeout(() => resolve('timeout'), 5000);
+		} catch (e) {
+			resolve('error');
+		}
+	});
+}
+
+async function onTestCertificateClick() {
+	const cell = document.getElementById('cert-detect-cell');
+	if (!cell) return;
+
+	cell.innerHTML = 'Testing...';
+
+	const result = await testClientCertificate();
+
+	if (result === 'accessible') {
+		cell.innerHTML = 'Certificate file accessible (install status unknown)';
+	} else if (result === 'not-accessible') {
+		cell.innerHTML = 'Certificate file not accessible';
+	} else {
+		cell.innerHTML = 'Test inconclusive (may be false negative)';
+	}
+}
+
 async function isNetskopeDetected() {
 	const hasNetskopeElement = document.querySelector('[data-netskope]') !== null ||
 		document.querySelector('[class*="netskope"]') !== null ||
@@ -358,9 +412,13 @@ async function displayBrowserInfo() {
 
 	const isGlobalProtect = await isGlobalProtectDetected();
 
-	updateProgress('browser-progress', 50);
+	updateProgress('browser-progress', 40);
 
 	const isNetskope = await isNetskopeDetected();
+
+	updateProgress('browser-progress', 65);
+
+	const isCertificate = await isClientCertificateDetected();
 
 	updateProgress('browser-progress', 90);
 
@@ -375,6 +433,7 @@ async function displayBrowserInfo() {
 		<tr><td>Online Status</td><td>${navigator.onLine ? 'Online' : 'Offline'}</td></tr>
 		<tr><td>Is Global Protect Detected</td><td id="gp-detect-cell">${isGlobalProtect ? 'Yes' : `${falseNegativeNote} <button onclick="onTryGlobalProtectClick()" style="margin-left: 8px; cursor: pointer;">Try Protocol</button>`}</td></tr>
 		<tr><td>Is Netskope Detected</td><td>${isNetskope || falseNegativeNote}</td></tr>
+		<tr><td>Is Client Certificate Detected</td><td id="cert-detect-cell">${isCertificate === 'pending' ? `${falseNegativeNote} <button onclick="onTestCertificateClick()" style="margin-left: 8px; cursor: pointer;">Test Certificate</button>` : isCertificate}</td></tr>
 	`;
 
 	updateProgress('browser-progress', 100);

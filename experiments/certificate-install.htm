@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Guide for installing a client certificate on Windows">
+	<title>Certificate Installation Guide - Alisson Sol</title>
+	<link rel="stylesheet" href="client-info.css">
+	<style>
+		h2 {
+			color: #555;
+			margin-top: 30px;
+			margin-bottom: 15px;
+			font-size: 1.5em;
+			border-bottom: 2px solid #888;
+			padding-bottom: 8px;
+		}
+
+		h3 {
+			color: #666;
+			margin-top: 25px;
+			margin-bottom: 10px;
+			font-size: 1.2em;
+		}
+
+		p {
+			line-height: 1.6;
+			margin-bottom: 15px;
+		}
+
+		ul, ol {
+			margin-bottom: 15px;
+			padding-left: 25px;
+		}
+
+		li {
+			margin-bottom: 8px;
+			line-height: 1.5;
+		}
+
+		code {
+			background-color: #f0f0f0;
+			padding: 2px 6px;
+			border-radius: 3px;
+			font-family: 'Consolas', 'Monaco', monospace;
+			font-size: 0.9em;
+		}
+
+		pre {
+			background-color: #2d2d2d;
+			color: #f8f8f2;
+			padding: 15px;
+			border-radius: 6px;
+			overflow-x: auto;
+			margin: 15px 0;
+		}
+
+		pre code {
+			background-color: transparent;
+			padding: 0;
+			color: inherit;
+		}
+
+		.comment {
+			color: #6a9955;
+		}
+
+		.info-section {
+			margin-bottom: 20px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>Installing a Client Certificate on Windows</h1>
+
+		<p>This guide explains how to install the <code>certificate.cer</code> file as a client certificate on a Windows machine.</p>
+
+		<div class="info-section">
+			<h2>Prerequisites</h2>
+			<ul>
+				<li>Windows 10 or later</li>
+				<li>Administrator access (recommended)</li>
+				<li>The <code>certificate.cer</code> file</li>
+			</ul>
+		</div>
+
+		<div class="info-section">
+			<h2>Installation Steps</h2>
+
+			<h3>Method 1: Using Certificate Manager (GUI)</h3>
+			<ol>
+				<li><strong>Open the Certificate Manager</strong>:
+					<ul>
+						<li>Press <code>Win + R</code> to open the Run dialog</li>
+						<li>Type <code>certmgr.msc</code> and press Enter</li>
+						<li>This opens the Certificate Manager for the current user</li>
+					</ul>
+				</li>
+				<li><strong>Import the certificate</strong>:
+					<ul>
+						<li>In the left pane, expand <strong>Personal</strong></li>
+						<li>Right-click on <strong>Certificates</strong> and select <strong>All Tasks</strong> &gt; <strong>Import...</strong></li>
+						<li>Click <strong>Next</strong> in the Certificate Import Wizard</li>
+						<li>Click <strong>Browse</strong> and navigate to your certificate file</li>
+						<li>Select the file and click <strong>Next</strong></li>
+						<li>Choose <strong>Place all certificates in the following store</strong> and ensure <strong>Personal</strong> is selected</li>
+						<li>Click <strong>Next</strong>, then <strong>Finish</strong></li>
+					</ul>
+				</li>
+				<li><strong>Verify installation</strong>:
+					<ul>
+						<li>The certificate should now appear in <strong>Personal &gt; Certificates</strong></li>
+					</ul>
+				</li>
+			</ol>
+
+			<h3>Method 2: Using PowerShell</h3>
+			<p>Open PowerShell as Administrator and run:</p>
+			<pre><code><span class="comment"># Import certificate to Current User's Personal store</span>
+Import-Certificate -FilePath "C:\path\to\certificate.cer" -CertStoreLocation Cert:\CurrentUser\My
+
+<span class="comment"># Or import to Local Machine store (requires admin)</span>
+Import-Certificate -FilePath "C:\path\to\certificate.cer" -CertStoreLocation Cert:\LocalMachine\My</code></pre>
+
+			<h3>Method 3: Using Command Prompt</h3>
+			<p>Open Command Prompt as Administrator and run:</p>
+			<pre><code>certutil -addstore -user My "C:\path\to\certificate.cer"</code></pre>
+			<p>For machine-wide installation:</p>
+			<pre><code>certutil -addstore My "C:\path\to\certificate.cer"</code></pre>
+
+			<h3>Method 4: Double-Click Installation</h3>
+			<ol>
+				<li>Double-click the <code>certificate.cer</code> file</li>
+				<li>Click <strong>Install Certificate...</strong></li>
+				<li>Choose <strong>Current User</strong> or <strong>Local Machine</strong></li>
+				<li>Select <strong>Place all certificates in the following store</strong></li>
+				<li>Click <strong>Browse</strong> and select <strong>Personal</strong></li>
+				<li>Click <strong>Next</strong>, then <strong>Finish</strong></li>
+			</ol>
+		</div>
+
+		<div class="info-section">
+			<h2>Verifying the Installation</h2>
+			<p>To verify the certificate is installed:</p>
+			<ol>
+				<li>Press <code>Win + R</code>, type <code>certmgr.msc</code>, press Enter</li>
+				<li>Navigate to <strong>Personal &gt; Certificates</strong></li>
+				<li>Look for the certificate with the subject name from the certificate</li>
+			</ol>
+			<p>Or use PowerShell:</p>
+			<pre><code>Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*nickeckermann*" }</code></pre>
+		</div>
+
+		<div class="info-section">
+			<h2>Removing the Certificate</h2>
+			<p>To remove the certificate:</p>
+			<ol>
+				<li>Open Certificate Manager (<code>certmgr.msc</code>)</li>
+				<li>Navigate to <strong>Personal &gt; Certificates</strong></li>
+				<li>Right-click the certificate and select <strong>Delete</strong></li>
+			</ol>
+			<p>Or use PowerShell:</p>
+			<pre><code>Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*nickeckermann*" } | Remove-Item</code></pre>
+		</div>
+
+		<div class="info-section">
+			<h2>Troubleshooting</h2>
+			<ul>
+				<li><strong>Certificate not showing</strong>: Ensure the file format is correct (PEM/CER format)</li>
+				<li><strong>Access denied</strong>: Run the command prompt or PowerShell as Administrator</li>
+				<li><strong>Import failed</strong>: The certificate may require a private key for client authentication; this public certificate alone may not be sufficient for all use cases</li>
+			</ul>
+		</div>
+
+		<div class="back-link">
+			<a href="../index.htm">&larr; Back to Home</a>
+		</div>
+	</div>
+</body>
+
+</html>
+</code></pre>
