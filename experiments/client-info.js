@@ -327,26 +327,103 @@ async function isClientCertificateDetected() {
 	return 'pending';
 }
 
-async function testClientCertificate() {
-	return new Promise((resolve) => {
-		try {
-			const testUrl = window.location.origin + '/experiments/certificate.cer';
-			fetch(testUrl, {
-				method: 'HEAD',
-				credentials: 'include'
-			}).then(response => {
-				if (response.ok) {
-					resolve('accessible');
-				} else {
-					resolve('not-accessible');
-				}
-			}).catch(() => {
-				resolve('error');
-			});
+async function downloadFile(filename) {
+	const cacheBuster = '?t=' + Date.now();
+	const url = window.location.origin + '/' + filename + cacheBuster;
 
-			setTimeout(() => resolve('timeout'), 5000);
-		} catch (e) {
-			resolve('error');
+	const response = await fetch(url, {
+		method: 'GET',
+		cache: 'no-store'
+	});
+
+	if (!response.ok) {
+		throw new Error(`Failed to download ${filename}`);
+	}
+
+	const blob = await response.blob();
+	const downloadUrl = URL.createObjectURL(blob);
+	const link = document.createElement('a');
+	link.href = downloadUrl;
+	link.download = filename;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+	URL.revokeObjectURL(downloadUrl);
+}
+
+function showCertificateInstructionsDialog() {
+	const existingDialog = document.getElementById('cert-instructions-dialog');
+	if (existingDialog) {
+		existingDialog.remove();
+	}
+
+	const dialog = document.createElement('div');
+	dialog.id = 'cert-instructions-dialog';
+	dialog.style.cssText = `
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 10000;
+	`;
+
+	const content = document.createElement('div');
+	content.style.cssText = `
+		background: white;
+		padding: 24px;
+		border-radius: 8px;
+		max-width: 600px;
+		width: 90%;
+		max-height: 80vh;
+		overflow-y: auto;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	`;
+
+	content.innerHTML = `
+		<h2 style="margin-top: 0; color: #333;">Certificate Check Instructions</h2>
+		<p style="color: #555;">The following files have been downloaded to your Downloads folder:</p>
+		<ul style="color: #555;">
+			<li><strong>Test-Certificate.ps1</strong> - PowerShell script to check certificate installation</li>
+			<li><strong>certificate.cer</strong> - The certificate file to verify</li>
+		</ul>
+		<p style="color: #555;">To check if the certificate is installed, follow these steps:</p>
+		<ol style="color: #555; line-height: 1.8;">
+			<li>Open <strong>PowerShell</strong> (search for "PowerShell" in the Start menu)</li>
+			<li>Navigate to your Downloads folder by running:
+				<pre style="background: #f4f4f4; padding: 8px; border-radius: 4px; overflow-x: auto;">cd ~\\Downloads</pre>
+			</li>
+			<li>Execute the script by running:
+				<pre style="background: #f4f4f4; padding: 8px; border-radius: 4px; overflow-x: auto;">powershell -ExecutionPolicy Bypass -File .\\Test-Certificate.ps1</pre>
+			</li>
+		</ol>
+		<p style="color: #888; font-size: 0.9em;">Note: The script will check if the certificate is installed in the Windows certificate store and display the results.</p>
+		<button id="cert-dialog-close-btn" style="
+			margin-top: 16px;
+			padding: 10px 24px;
+			background: #007bff;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 1em;
+		">Close</button>
+	`;
+
+	dialog.appendChild(content);
+	document.body.appendChild(dialog);
+
+	document.getElementById('cert-dialog-close-btn').addEventListener('click', () => {
+		dialog.remove();
+	});
+
+	dialog.addEventListener('click', (e) => {
+		if (e.target === dialog) {
+			dialog.remove();
 		}
 	});
 }
@@ -355,16 +432,17 @@ async function onTestCertificateClick() {
 	const cell = document.getElementById('cert-detect-cell');
 	if (!cell) return;
 
-	cell.innerHTML = 'Testing...';
+	cell.innerHTML = 'Downloading files...';
 
-	const result = await testClientCertificate();
+	try {
+		await downloadFile('Test-Certificate.ps1');
+		await downloadFile('certificate.cer');
 
-	if (result === 'accessible') {
-		cell.innerHTML = 'Certificate file accessible (install status unknown)';
-	} else if (result === 'not-accessible') {
-		cell.innerHTML = 'Certificate file not accessible';
-	} else {
-		cell.innerHTML = 'Test inconclusive (may be false negative)';
+		cell.innerHTML = 'Files downloaded <button onclick="onTestCertificateClick()" style="margin-left: 8px; cursor: pointer;">Download Again</button>';
+
+		showCertificateInstructionsDialog();
+	} catch (error) {
+		cell.innerHTML = `Download failed: ${error.message} <button onclick="onTestCertificateClick()" style="margin-left: 8px; cursor: pointer;">Retry</button>`;
 	}
 }
 
