@@ -151,7 +151,7 @@ Import-Certificate -FilePath "C:\path\to\certificate.cer" -CertStoreLocation Cer
 				<li>Look for the certificate with the subject name from the certificate</li>
 			</ol>
 			<p>Or use PowerShell:</p>
-			<pre><code>Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*nickeckermann*" }</code></pre>
+			<pre><code>Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*CERTIFICATE*" }</code></pre>
 		</div>
 
 		<div class="info-section">
@@ -163,7 +163,7 @@ Import-Certificate -FilePath "C:\path\to\certificate.cer" -CertStoreLocation Cer
 				<li>Right-click the certificate and select <strong>Delete</strong></li>
 			</ol>
 			<p>Or use PowerShell:</p>
-			<pre><code>Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*nickeckermann*" } | Remove-Item</code></pre>
+			<pre><code>Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*CERTIFICATE*" } | Remove-Item</code></pre>
 		</div>
 
 		<div class="info-section">
