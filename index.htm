@@ -312,7 +312,7 @@
         </main>
 
         <script>
-                function openTab(tabName) {
+                function openTab(tabName, skipPush) {
                         const tabContents = document.querySelectorAll('.tab-content');
                         const tabButtons = document.querySelectorAll('.tab-button');
 
@@ -326,7 +326,38 @@
 
                         document.getElementById(tabName).classList.add('active');
                         document.querySelector(`button[onclick="openTab('${tabName}')"]`).classList.add('active');
+
+                        if (!skipPush) {
+                                const url = tabName === 'about' ? '/' : '/' + tabName;
+                                history.pushState({ tab: tabName }, '', url);
+                        }
                 }
+
+                function getTabFromPath(path) {
+                        const segment = path.split('/').filter(Boolean)[0] || 'about';
+                        return document.getElementById(segment) ? segment : 'about';
+                }
+
+                // Handle redirect from 404.html
+                const redirect = sessionStorage.getItem('redirect');
+                if (redirect) {
+                        sessionStorage.removeItem('redirect');
+                        const tab = getTabFromPath(redirect);
+                        openTab(tab, true);
+                        history.replaceState({ tab: tab }, '', redirect);
+                } else {
+                        const tab = getTabFromPath(window.location.pathname);
+                        openTab(tab, true);
+                        history.replaceState({ tab: tab }, '', window.location.pathname);
+                }
+
+                // Handle browser back/forward
+                window.addEventListener('popstate', function (event) {
+                        const tab = event.state && event.state.tab
+                                ? event.state.tab
+                                : getTabFromPath(window.location.pathname);
+                        openTab(tab, true);
+                });
         </script>
 
 </body>
