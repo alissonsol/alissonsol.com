@@ -18,7 +18,7 @@
       - What about the content?
         - `curl www.alissonsol.com`
         - `curl alissonsol.com`
-        - Something was wrong, event after the updates
+        - Something was wrong, even after the updates
       - The epiphany came looking at the top of [Settings -> Pages](https://github.com/alissonsol/alissonsol.com/settings/pages)
         - Text was `Your site is live at http://alissonsol.com`
         - There was a redirect web forwarding rule in [Google Domains -> Website](https://domains.google.com/registrar/alissonsol.com/webhost)
