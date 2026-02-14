@@ -6,10 +6,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Alisson Sol">
         <meta name="keywords" content="Alisson Sol, Physicist, Software Engineer, General Manager">
-        <meta http-equiv="pragma" content="no-cache">
-        <meta http-equiv="expires" content="0">
-        <meta http-equiv="cache-control" content="no-cache">
-        <meta http-equiv="cache-control" content="max-age=0">
         <title>Alisson Sol - Physicist, Software Engineer, General Manager</title>
         <style>
                 body {
@@ -23,6 +19,10 @@
                         float: left;
                         margin-right: 15px;
                         margin-bottom: 5px;
+                }
+
+                li {
+                        margin-bottom: 0.5em;
                 }
 
                 .tab-container {
@@ -77,13 +77,14 @@
 
 <body>
 
-        <div class="tab-container">
+        <nav class="tab-container">
                 <button class="tab-button active" onclick="openTab('about')">About</button>
                 <button class="tab-button" onclick="openTab('publications')">Publications</button>
                 <button class="tab-button" onclick="openTab('experiments')">Experiments</button>
-        </div>
+        </nav>
 
-        <div id="about" class="tab-content active">
+        <main>
+        <section id="about" class="tab-content active">
                 <p><img src="images/Alisson.Sol.jpg" alt="Alisson Sol" width="120" height="160">Alisson Sol is a
                         hands-on engineering leader with deep expertise in distributed systems, AI, and scaling products
                         to millions of users at top tech companies. He has built and managed teams that delivered
@@ -106,56 +107,33 @@
                         not coding, he likes to run half-marathons, play soccer, disassemble hardware, put it back to
                         work, and reuse the spare parts elsewhere!</p>
 
-                <hr />
+                <hr>
 
                 <ul>
-                        <li>
-                                <p style="text-align: left">Email: <a href="mailto:email@AlissonSol.com">email at
-                                                AlissonSol.com</a>
-                        </li>
-                        <li>
-                                <p style="text-align: left">GitHub: <a href="http://GitHub.com/alissonsol"
-                                                target="_blank">http://GitHub.com/alissonsol</a>
-                        </li>
-                        <li>
-                                <p style="text-align: left">Social networks: <a
-                                                href="https://www.linkedin.com/in/alissonsol/"
-                                                target="_blank">LinkedIn</a>, <a href="https://twitter.com/alissonsol"
-                                                target="_blank">Twitter</a>, <a
-                                                href="https://www.instagram.com/alisson.a.sol/"
-                                                target="_blank">Instagram</a>
-                        </li>
-                        <li>
-                                <p style="text-align: left">Resume: PDF <a href="./Alisson_Sol_en_Resume.pdf"
-                                                target="_blank">file</a>
-                        </li>
-                        <li>
-                                <p style="text-align: left">Curriculum Vitae: PDF <a href="./Alisson_Sol_en_CV.pdf"
-                                                target="_blank">file</a>
-                        </li>
-                        <li>
-                                <p style="text-align: left">Personal <a href="http://alissonsol.blogspot.com"
-                                                target="_blank">blog</a>
-                                        and <a href="http://alissonsol.wordpress.com" target="_blank">Wordpress</a>
-                                        mirror
-                        </li>
-                        <li>
-                                <p style="text-align: left">Google <a
-                                                href="https://scholar.google.com/citations?user=-LLqpaEAAAAJ"
-                                                target="_blank">Scholar</a>,
-                                        Google <a href="https://patents.google.com/?inventor=Alisson+Sol"
-                                                target="_blank">Patents</a>
-                        </li>
-                        <li>
-                                <p style="text-align: left">Calendar for meeting scheduling: <a
-                                                href="https://calendly.com/alissonsol-ydyw/"
-                                                target="_blank">Calendly</a>
-                        </li>
+                        <li>Email: <a href="mailto:email@AlissonSol.com">email at AlissonSol.com</a></li>
+                        <li>GitHub: <a href="http://GitHub.com/alissonsol"
+                                        target="_blank">http://GitHub.com/alissonsol</a></li>
+                        <li>Social networks: <a href="https://www.linkedin.com/in/alissonsol/"
+                                        target="_blank">LinkedIn</a>, <a href="https://twitter.com/alissonsol"
+                                        target="_blank">Twitter</a>, <a
+                                        href="https://www.instagram.com/alisson.a.sol/"
+                                        target="_blank">Instagram</a></li>
+                        <li>Resume: PDF <a href="./Alisson_Sol_en_Resume.pdf" target="_blank">file</a></li>
+                        <li>Curriculum Vitae: PDF <a href="./Alisson_Sol_en_CV.pdf" target="_blank">file</a></li>
+                        <li>Personal <a href="http://alissonsol.blogspot.com" target="_blank">blog</a>
+                                and <a href="http://alissonsol.wordpress.com" target="_blank">Wordpress</a>
+                                mirror</li>
+                        <li>Google <a href="https://scholar.google.com/citations?user=-LLqpaEAAAAJ"
+                                        target="_blank">Scholar</a>,
+                                Google <a href="https://patents.google.com/?inventor=Alisson+Sol"
+                                        target="_blank">Patents</a></li>
+                        <li>Calendar for meeting scheduling: <a href="https://calendly.com/alissonsol-ydyw/"
+                                        target="_blank">Calendly</a></li>
                 </ul>
-        </div>
+        </section>
 
-        <div id="publications" class="tab-content">
-                <p style="text-align: left"><b>Upcoming events</b></p>
+        <section id="publications" class="tab-content">
+                <p style="text-align: left"><strong>Upcoming events</strong></p>
                 <ul>
                         <li>
                                 The way to Edge AI - <a href="https://llmday.com/2026-nyc-q1/"
@@ -167,7 +145,7 @@
                                         target="_blank">Cloud Security</a> - 24th February 2025, New York City, One WTC
                         </li>
                 </ul>
-                <p style="text-align: left"><b>Past presentations</b></p>
+                <p style="text-align: left"><strong>Past presentations</strong></p>
                 <ul>
                         <li>Debugging Your AI Solution - Jun/2025 - <a
                                         href="slides/2025-06.Debugging.Your.AI.Solution.pdf" target="_blank">slides</a>
@@ -270,7 +248,7 @@
                         </li>
                 </ul>
                 <hr>
-                <p style="text-align: left"><b>Academic work</b></p>
+                <p style="text-align: left"><strong>Academic work</strong></p>
                 <ul>
                         <li>A metamodel for distributed multimedia processing systems development - <a
                                         href="pub/Sol_Alisson_Distributed_Processing_Metamodel_1998.pdf"
@@ -291,9 +269,9 @@
                                         target="_blank">profile</a>
                         </li>
                 </ul>
-        </div>
+        </section>
 
-        <div id="experiments" class="tab-content">
+        <section id="experiments" class="tab-content">
 
                 <p style="text-align: center">The <a href="experiments/client-info.htm" target="_blank">Client Info</a>
                         test page.</p>
@@ -306,11 +284,11 @@
                 <hr>
 
                 <p style="text-align: center">Instagram pictures: <a href="https://www.instagram.com/alisson.a.sol/"
-                                target="_blank">alisson.a.sol</a><br />
-                        <!-- SnapWidget -->
-                        <iframe src="https://snapwidget.com/embed/963060" class="snapwidget-widget"
-                                style="border:none; overflow:hidden; width:640px; height:160px"></iframe>
-                </p>
+                                target="_blank">alisson.a.sol</a></p>
+                <!-- SnapWidget -->
+                <iframe src="https://snapwidget.com/embed/963060" class="snapwidget-widget"
+                        title="Instagram SnapWidget"
+                        style="border:none; overflow:hidden; width:640px; height:160px"></iframe>
 
                 <hr>
 
@@ -318,19 +296,20 @@
 
                 <iframe style="border-radius:12px; border:none"
                         src="https://open.spotify.com/embed/artist/3xwrVmAg320G7DzTPkhOjX?utm_source=generator"
-                        width="100%" height="152" allowfullscreen
+                        width="100%" height="152" title="Spotify - Alici" allowfullscreen
                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                         loading="lazy">
                 </iframe>
 
                 <hr>
 
-                <p>
+                <footer>
                         <small>Updated: Feb/2026. Using <a
                                         href="https://github.com/alissonsol/alissonsol.com/blob/main/README.md"
                                         target="_blank">GitHub Pages</a>.</small>
-                </p>
-        </div>
+                </footer>
+        </section>
+        </main>
 
         <script>
                 function openTab(tabName) {
